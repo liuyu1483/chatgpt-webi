@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AI 聊天助手</title>
     <style>
         * {
@@ -415,6 +415,169 @@
             border-radius: 10px;
             white-space: nowrap;
         }
+
+        /* 添加侧边栏切换按钮的样式 */
+        .toggle-sidebar {
+            position: absolute;
+            left: 270px;
+            top: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-sidebar:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 添加侧边栏收起时的样式 */
+        .container.sidebar-collapsed .sidebar {
+            margin-left: -260px;
+        }
+
+        .container.sidebar-collapsed .toggle-sidebar {
+            left: 10px;
+        }
+
+        /* 添加过渡动画 */
+        .sidebar {
+            transition: margin-left 0.3s ease;
+        }
+
+        /* 添加移动端适配的样式 */
+        @media screen and (max-width: 768px) {
+            .container {
+                position: relative;
+            }
+
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                background-color: #202123;
+                width: 85%;
+                max-width: 300px;
+            }
+
+            .container.sidebar-collapsed .sidebar {
+                margin-left: -100%;
+            }
+
+            .toggle-sidebar {
+                position: fixed;
+                left: auto;
+                right: 10px;
+                top: 10px;
+                background-color: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                z-index: 1001;
+            }
+
+            .container.sidebar-collapsed .toggle-sidebar {
+                left: auto;
+                right: 10px;
+            }
+
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .chat-container {
+                padding: 10px;
+                padding-top: 50px;
+            }
+
+            .input-container {
+                padding: 10px;
+            }
+
+            .message {
+                padding: 15px;
+            }
+
+            .message-content {
+                font-size: 15px;
+                padding-right: 30px;
+            }
+
+            .input-wrapper {
+                margin-bottom: 10px;
+            }
+
+            textarea {
+                font-size: 15px;
+                padding: 12px;
+                height: 45px;
+            }
+
+            .welcome-text {
+                font-size: 24px;
+                margin-top: 100px;
+            }
+
+            /* 登录界面适配 */
+            .login-container {
+                width: 90%;
+                padding: 30px 20px;
+                margin: 0 15px;
+            }
+
+            .login-input {
+                font-size: 15px;
+                padding: 10px;
+            }
+
+            /* 设置面板适配 */
+            .settings-panel {
+                position: fixed;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 320px;
+                bottom: 70px;
+            }
+
+            /* 消息操作按钮始终显示 */
+            .message-actions {
+                display: flex;
+                opacity: 0.8;
+            }
+
+            /* 优化点击区域 */
+            .action-icon {
+                padding: 8px;
+                min-width: 35px;
+                min-height: 35px;
+            }
+
+            /* 优化发送按钮 */
+            .send-button {
+                padding: 12px;
+                min-width: 40px;
+                min-height: 40px;
+            }
+        }
+
+        /* 添加安全区域适配（适配刘海屏） */
+        @supports (padding: max(0px)) {
+            .input-container {
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+
+            .settings-panel {
+                bottom: max(70px, env(safe-area-inset-bottom) + 40px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -471,6 +634,13 @@
                 </div>
             </div>
         </div>
+        
+        <button class="toggle-sidebar" onclick="toggleSidebar()" title="切换侧边栏">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                <path d="M3 12h18M3 6h18M3 18h18"/>
+            </svg>
+        </button>
+
         <div class="main-content">
             <div class="chat-container" id="chat-container">
                 <div class="welcome-text">有什么可以帮忙的？</div>
@@ -1031,6 +1201,28 @@
             activityEvents.forEach(eventName => {
                 document.addEventListener(eventName, updateLastActivity);
             });
+        }
+
+        // 添加切换侧边栏的函数
+        function toggleSidebar() {
+            const container = document.querySelector('.container');
+            container.classList.toggle('sidebar-collapsed');
+            
+            // 更新切换按钮的图标
+            const toggleButton = document.querySelector('.toggle-sidebar');
+            if (container.classList.contains('sidebar-collapsed')) {
+                toggleButton.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                `;
+            } else {
+                toggleButton.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                `;
+            }
         }
     </script>
 </body>
