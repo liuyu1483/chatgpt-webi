@@ -340,10 +340,95 @@
         .settings button.new-chat:hover {
             opacity: 0.9;
         }
+
+        /* 添加登录界面的样式 */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .login-button {
+            background-color: #5b5fc7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .login-button:hover {
+            background-color: #4b4fa7;
+        }
+
+        .login-error {
+            color: #dc2626;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* 添加加载状态的样式 */
+        .loading-status {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -20px;
+            font-size: 12px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 添加登录界面 -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-container">
+            <h2 class="login-title">登录胖红AI</h2>
+            <input type="password" id="password" class="login-input" placeholder="请输入访问密码">
+            <button onclick="login()" class="login-button">登录</button>
+            <div class="login-error" id="login-error">密码错误，请重试</div>
+        </div>
+    </div>
+
+    <div class="container" style="display: none;">
         <div class="sidebar">
             <button class="new-chat">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -407,6 +492,11 @@
         let chatHistory = [];
         let chats = [];
         let currentChatId = null;
+
+        // 添加自动登出相关的变量和函数
+        const TIMEOUT_DURATION = 30 * 60 * 1000; // 30分钟，转换为毫秒
+        let lastActivityTime = Date.now();
+        let checkActivityInterval;
 
         function saveSettings() {
             const apiKey = document.getElementById('api-key').value;
@@ -616,11 +706,46 @@
             addMessage(message, true);  // 先显示用户消息
             input.value = '';  // 清空输入框
 
-            const apiKey = localStorage.getItem('apiKey');  // 从 localStorage 获取 API Key
+            // 添加AI消息占位并显示加载状态
+            const aiMessageDiv = document.createElement('div');
+            aiMessageDiv.className = 'message assistant-message';
+            
+            // 添加头像
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            avatarDiv.innerHTML = `
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#666">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+            `;
+            aiMessageDiv.appendChild(avatarDiv);
+
+            // 添加内容占位
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = '<div class="loading-status">正在思考中... 0s</div>';
+            aiMessageDiv.appendChild(contentDiv);
+
+            document.getElementById('chat-container').appendChild(aiMessageDiv);
+            aiMessageDiv.scrollIntoView({ behavior: 'smooth' });
+
+            // 开始计时
+            let seconds = 0;
+            const timer = setInterval(() => {
+                seconds++;
+                const loadingStatus = aiMessageDiv.querySelector('.loading-status');
+                if (loadingStatus) {
+                    loadingStatus.textContent = `正在思考中... ${seconds}s`;
+                }
+            }, 1000);
+
+            const apiKey = localStorage.getItem('apiKey');
             const groupId = "1879168667833340811";
             const apiEndpoint = `https://api.minimax.chat/v1/text/chatcompletion_v2?GroupId=${groupId}`;
 
             if (!apiKey) {
+                clearInterval(timer);
+                aiMessageDiv.remove();
                 addMessage('请先设置 API Key', false);
                 return;
             }
@@ -667,13 +792,21 @@
                 const data = await response.json();
                 console.log('API 返回数据：', data);
                 
+                // 清除计时器和移除加载状态的消息
+                clearInterval(timer);
+                aiMessageDiv.remove();
+                
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const reply = data.choices[0].message.content;
-                    addMessage(reply, false);  // AI 回复显示为非用户消息
+                    addMessage(reply, false);
                 } else {
                     throw new Error('无法解析 AI 响应');
                 }
             } catch (error) {
+                // 清除计时器和移除加载状态的消息
+                clearInterval(timer);
+                aiMessageDiv.remove();
+                
                 addMessage(`发生错误：${error.message}`, false);
                 console.error('API 错误：', error);
             }
@@ -778,6 +911,125 @@
             }).catch(err => {
                 console.error('复制失败:', err);
                 alert('复制失败，请重试');
+            });
+        }
+
+        // 添加登录相关的脚本
+        const correctPassword = "62828338"; // 修改默认密码为62828338
+        
+        // 检查是否已登录
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.querySelector('.container').style.display = 'flex';
+                // 初始化活动监听
+                initializeActivityMonitoring();
+            }
+        }
+
+        // 登录函数
+        function login() {
+            const password = document.getElementById('password').value;
+            if (password === correctPassword) {
+                localStorage.setItem('isLoggedIn', 'true');
+                document.getElementById('login-overlay').style.display = 'none';
+                document.querySelector('.container').style.display = 'flex';
+                document.getElementById('login-error').style.display = 'none';
+                
+                // 初始化活动监听
+                lastActivityTime = Date.now();
+                initializeActivityMonitoring();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // 添加回车键登录功能
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        // 页面加载时检查登录状态
+        window.addEventListener('load', function() {
+            checkLogin();
+            loadSettings();
+            loadChats();
+        });
+
+        // 在设置面板中添加退出登录功能
+        function addLogoutButton() {
+            const settingsSection = document.querySelector('.settings');
+            const logoutSection = document.createElement('div');
+            logoutSection.className = 'settings-section';
+            logoutSection.innerHTML = `
+                <hr>
+                <button onclick="logout()" class="settings-btn danger">退出登录</button>
+            `;
+            settingsSection.appendChild(logoutSection);
+        }
+
+        // 退出登录函数
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('isLoggedIn');
+                document.getElementById('login-overlay').style.display = 'flex';
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('password').value = '';
+                // 清除活动监听
+                if (checkActivityInterval) {
+                    clearInterval(checkActivityInterval);
+                }
+            }
+        }
+
+        // 调用添加退出登录按钮函数
+        addLogoutButton();
+
+        // 更新最后活动时间的函数
+        function updateLastActivity() {
+            lastActivityTime = Date.now();
+        }
+
+        // 检查是否需要自动登出的函数
+        function checkActivityTimeout() {
+            const currentTime = Date.now();
+            if (currentTime - lastActivityTime >= TIMEOUT_DURATION) {
+                autoLogout();
+            }
+        }
+
+        // 自动登出函数
+        function autoLogout() {
+            localStorage.removeItem('isLoggedIn');
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('password').value = '';
+            clearInterval(checkActivityInterval);
+            alert('由于长时间未操作，系统已自动登出，请重新登录。');
+        }
+
+        // 初始化活动监听
+        function initializeActivityMonitoring() {
+            // 清除可能存在的旧计时器
+            if (checkActivityInterval) {
+                clearInterval(checkActivityInterval);
+            }
+
+            // 设置定期检查
+            checkActivityInterval = setInterval(checkActivityTimeout, 60000); // 每分钟检查一次
+
+            // 添加用户活动监听器
+            const activityEvents = [
+                'mousedown', 'mousemove', 'keypress', 
+                'scroll', 'touchstart', 'click', 'keydown'
+            ];
+
+            activityEvents.forEach(eventName => {
+                document.addEventListener(eventName, updateLastActivity);
             });
         }
     </script>
