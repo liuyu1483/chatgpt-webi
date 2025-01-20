@@ -1087,25 +1087,33 @@
         // 添加登录相关的脚本
         const correctPassword = "62828338"; // 修改默认密码为62828338
         
-        // 检查是否已登录
+        // 修改检查登录状态的函数
         function checkLogin() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            if (isLoggedIn === 'true') {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.querySelector('.container').style.display = 'flex';
-                // 初始化活动监听
-                initializeActivityMonitoring();
-            }
+            // 移除检查localStorage中的登录状态
+            // 直接显示登录界面
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.querySelector('.container').style.display = 'none';
         }
 
-        // 登录函数
+        // 修改登录函数
         function login() {
             const password = document.getElementById('password').value;
             if (password === correctPassword) {
-                localStorage.setItem('isLoggedIn', 'true');
                 document.getElementById('login-overlay').style.display = 'none';
                 document.querySelector('.container').style.display = 'flex';
                 document.getElementById('login-error').style.display = 'none';
+                
+                // 登录成功后自动收起侧边栏
+                const container = document.querySelector('.container');
+                container.classList.add('sidebar-collapsed');
+                
+                // 更新切换按钮的图标
+                const toggleButton = document.querySelector('.toggle-sidebar');
+                toggleButton.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                `;
                 
                 // 初始化活动监听
                 lastActivityTime = Date.now();
@@ -1116,16 +1124,9 @@
             }
         }
 
-        // 添加回车键登录功能
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
-        });
-
-        // 页面加载时检查登录状态
+        // 修改页面加载事件
         window.addEventListener('load', function() {
-            checkLogin();
+            checkLogin(); // 现在这个函数会直接显示登录界面
             loadSettings();
             loadChats();
         });
