@@ -57,6 +57,17 @@
             width: 100%;
         }
 
+        .input-header {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .thinking-mode {
+            display: flex;
+            align-items: center;
+        }
+
         .message {
             margin-bottom: 20px;
             padding: 20px;
@@ -132,8 +143,6 @@
             border-radius: 8px;
             background: white;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
         }
 
         textarea {
@@ -658,6 +667,58 @@
                 transform: translateX(-50%);
             }
         }
+
+        .input-actions {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .deep-thinking-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .deep-thinking-btn.active {
+            background: #4b4fa7;
+            color: white;
+            border-color: #4b4fa7;
+        }
+        
+        .deep-thinking-btn.active svg {
+            stroke: white;
+        }
+        
+        textarea {
+            padding-right: 180px !important;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .deep-thinking-btn span {
+                display: none;
+            }
+            
+            .deep-thinking-btn {
+                padding: 6px;
+            }
+            
+            textarea {
+                padding-right: 100px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -748,8 +809,25 @@
                 <div class="welcome-text">有什么可以帮忙的？</div>
             </div>
             <div class="input-container">
+                <div class="input-header">
+                    <div class="thinking-mode">
+                        <button id="deep-thinking" class="deep-thinking-btn" onclick="toggleDeepThinking()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                            </svg>
+                            <span>深度思考模式</span>
+                        </button>
+                    </div>
+                </div>
                 <div class="input-wrapper">
-                    <textarea id="user-input" placeholder="给胖红AI发送消息..." onkeydown="if(event.keyCode===13&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+                    <textarea 
+                        id="user-input" 
+                        placeholder="给胖红AI发送消息..." 
+                        lang="zh"
+                        inputmode="text"
+                        enterkeyhint="send"
+                        onkeydown="if(event.keyCode===13&&!event.shiftKey){event.preventDefault();sendMessage();}"
+                    ></textarea>
                     <button class="send-button" onclick="sendMessage()">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 12L20 12M20 12L14 6M20 12L14 18" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -782,6 +860,10 @@
             localStorage.setItem('minimaxEndpoint', minimaxEndpoint);
             localStorage.setItem('deepseekKey', deepseekKey);
             localStorage.setItem('deepseekEndpoint', deepseekEndpoint);
+            
+            // 更新显示的当前模型名称
+            const currentModel = document.querySelector('.current-model');
+            currentModel.textContent = aiModel === 'minimax' ? 'MiniMax AI' : 'DeepSeek AI';
             
             alert('设置已保存！');
         }
@@ -837,57 +919,17 @@
             return "新对话";
         }
 
+        // 修改 createNewChat 函数
         function createNewChat() {
-            // 保存当前聊天记录
-            if (currentChatId) {
-                const currentChat = chats.find(chat => chat.id === currentChatId);
-                if (currentChat) {
-                    currentChat.messages = chatHistory;
-                }
+            // 清除可能存在的旧定时器
+            if (window.messageLoadingTimeout) {
+                clearTimeout(window.messageLoadingTimeout);
             }
-
-            // 创建新聊天
-            const newChatId = Date.now().toString();
-            const newChat = {
-                id: newChatId,
-                messages: [],
-                summary: "新对话"
-            };
-            chats.push(newChat);
-            currentChatId = newChatId;
-            chatHistory = [];
             
-            // 更新聊天列表
-            updateChatList();
-            // 显示欢迎界面
-            showWelcomeScreen();
+            const currentModel = localStorage.getItem('aiModel') || 'minimax';
             
-            // 保存到本地存储
-            localStorage.setItem('chats', JSON.stringify(chats));
-            localStorage.setItem('currentChatId', currentChatId);
-        }
-
-        function updateChatList() {
-            const chatList = document.querySelector('.chat-list');
-            chatList.innerHTML = '';
-            
-            chats.forEach(chat => {
-                const chatItem = document.createElement('div');
-                chatItem.className = `chat-item ${chat.id === currentChatId ? 'active' : ''}`;
-                chatItem.onclick = () => switchChat(chat.id);
-                chatItem.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/>
-                    </svg>
-                    ${chat.summary}
-                `;
-                chatList.appendChild(chatItem);
-            });
-        }
-
-        function switchChat(chatId) {
-            // 保存当前聊天记录
-            if (currentChatId) {
+            // 如果当前有对话，保存它
+            if (currentChatId && chatHistory.length > 0) {
                 const currentChat = chats.find(chat => chat.id === currentChatId);
                 if (currentChat) {
                     currentChat.messages = chatHistory;
@@ -895,21 +937,112 @@
                 }
             }
             
-            // 切换到选中的聊天
-            currentChatId = chatId;
-            const selectedChat = chats.find(chat => chat.id === chatId);
-            if (selectedChat) {
-                chatHistory = selectedChat.messages;
-                // 清空并重新显示消息
-                document.getElementById('chat-container').innerHTML = '';
-                chatHistory.forEach(msg => {
-                    addMessage(msg.content, msg.isUser, false);
-                });
+            // 创建新聊天
+            const newChatId = Date.now().toString();
+            const newChat = {
+                id: newChatId,
+                messages: [],
+                summary: "新对话",
+                model: currentModel
+            };
+            
+            // 添加新对话到列表开头
+            chats.unshift(newChat);
+            
+            // 更新当前状态
+            currentChatId = newChatId;
+            chatHistory = [];
+            
+            // 更新界面
+            const chatContainer = document.getElementById('chat-container');
+            if (chatContainer) {
+                chatContainer.innerHTML = '';
+                showWelcomeScreen();
             }
             
+            // 更新聊天列表
             updateChatList();
-            localStorage.setItem('chats', JSON.stringify(chats));
-            localStorage.setItem('currentChatId', currentChatId);
+            
+            // 保存到本地存储
+            const modelChatsKey = `chats_${currentModel}`;
+            const modelCurrentChatKey = `currentChatId_${currentModel}`;
+            localStorage.setItem(modelChatsKey, JSON.stringify(chats));
+            localStorage.setItem(modelCurrentChatKey, currentChatId);
+        }
+
+        function updateChatList() {
+            const chatList = document.querySelector('.chat-list');
+            if (!chatList) return;
+            
+            chatList.innerHTML = '';
+            
+            // 遍历所有聊天记录
+            chats.forEach(chat => {
+                const chatItem = document.createElement('div');
+                chatItem.className = `chat-item ${chat.id === currentChatId ? 'active' : ''}`;
+                chatItem.onclick = () => switchChat(chat.id);
+                
+                // 生成聊天项的HTML
+                chatItem.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                    ${chat.summary || "新对话"}
+                `;
+                
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        function switchChat(chatId) {
+            if (currentChatId === chatId) return; // 如果点击当前对话，不做任何操作
+            
+            try {
+                const currentModel = localStorage.getItem('aiModel') || 'minimax';
+                
+                // 保存当前聊天记录
+                if (currentChatId && chatHistory.length > 0) {
+                    const currentChat = chats.find(chat => chat.id === currentChatId);
+                    if (currentChat) {
+                        currentChat.messages = chatHistory;
+                        currentChat.summary = generateSummary(chatHistory);
+                    }
+                }
+                
+                // 切换到选中的聊天
+                currentChatId = chatId;
+                const selectedChat = chats.find(chat => chat.id === chatId);
+                
+                if (selectedChat) {
+                    chatHistory = selectedChat.messages || [];
+                    
+                    // 清空并重新显示消息
+                    const chatContainer = document.getElementById('chat-container');
+                    if (chatContainer) {
+                        chatContainer.innerHTML = '';
+                        if (chatHistory.length > 0) {
+                            chatHistory.forEach(msg => {
+                                addMessage(msg, msg.isUser, false);
+                            });
+                        } else {
+                            showWelcomeScreen();
+                        }
+                    }
+                }
+                
+                // 更新聊天列表
+                updateChatList();
+                
+                // 保存到本地存储
+                const modelChatsKey = `chats_${currentModel}`;
+                const modelCurrentChatKey = `currentChatId_${currentModel}`;
+                localStorage.setItem(modelChatsKey, JSON.stringify(chats));
+                localStorage.setItem(modelCurrentChatKey, currentChatId);
+                
+            } catch (error) {
+                console.error('切换聊天时出错:', error);
+                alert('切换聊天时出错，请刷新页面重试');
+            }
         }
 
         function addMessage(message, isUser, shouldSave = true) {
@@ -923,7 +1056,22 @@
             }
             
             chatHistory.push(message);
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            
+            // 如果需要保存，则更新当前聊天记录和本地存储
+            if (shouldSave && currentChatId) {
+                const currentModel = localStorage.getItem('aiModel') || 'minimax';
+                const currentChat = chats.find(chat => chat.id === currentChatId);
+                if (currentChat) {
+                    currentChat.messages = chatHistory;
+                    currentChat.summary = generateSummary(chatHistory);
+                    
+                    // 保存到对应模型的本地存储
+                    const modelChatsKey = `chats_${currentModel}`;
+                    const modelCurrentChatKey = `currentChatId_${currentModel}`;
+                    localStorage.setItem(modelChatsKey, JSON.stringify(chats));
+                    localStorage.setItem(modelCurrentChatKey, currentChatId);
+                }
+            }
             
             if (chatHistory.length === 1) {
                 clearWelcomeScreen();
@@ -988,16 +1136,6 @@
             
             document.getElementById('chat-container').appendChild(messageDiv);
             messageDiv.scrollIntoView({ behavior: 'smooth' });
-            
-            // 更新当前聊天的概要
-            if (shouldSave && currentChatId) {
-                const currentChat = chats.find(chat => chat.id === currentChatId);
-                if (currentChat) {
-                    currentChat.summary = generateSummary(chatHistory);
-                    updateChatList();
-                    localStorage.setItem('chats', JSON.stringify(chats));
-                }
-            }
         }
 
         function showWelcomeScreen() {
@@ -1049,81 +1187,118 @@
             }, 1000);
 
             try {
-                let response;
                 const aiModel = localStorage.getItem('aiModel') || 'minimax';
-                let apiKey, apiEndpoint;
+                const apiKey = aiModel === 'minimax' 
+                    ? localStorage.getItem('minimaxKey')
+                    : localStorage.getItem('deepseekKey');
+                    
+                if (!apiKey) {
+                    throw new Error(`请先在设置中配置 ${aiModel === 'minimax' ? 'MiniMax' : 'DeepSeek'} API Key`);
+                }
 
-                if (aiModel === 'minimax') {
-                    apiKey = localStorage.getItem('minimaxKey');
-                    apiEndpoint = localStorage.getItem('minimaxEndpoint');
-                    const groupId = "1879168667833340811";
-                    response = await fetch(`${apiEndpoint}?GroupId=${groupId}`, {
-                        method: 'POST',
-                        headers: {
-                            "Authorization": `Bearer ${apiKey.trim()}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            model: "minimax-text-01",
-                            messages: [
-                                {
-                                    content: "你是MiniMax AI助手，由MiniMax团队开发。你性格活泼开朗，说话幽默风趣。你会用轻松愉快的语气回答问题，经常会在回答中加入一些俏皮的表情。",
-                                    role: "system",
-                                    name: "MiniMax AI"
-                                },
-                                ...chatHistory.map(msg => ({
-                                    content: msg.content,
-                                    role: msg.isUser ? "user" : "assistant",
-                                    name: msg.isUser ? "用户" : "MiniMax AI"
-                                })),
-                                {
-                                    content: message,
-                                    role: "user",
-                                    name: "用户"
-                                }
-                            ],
-                            stream: false,
-                            max_tokens: 1000,
-                            temperature: 0.1,
-                            top_p: 0.95
-                        })
-                    });
-                } else {
-                    apiKey = localStorage.getItem('deepseekKey');
-                    apiEndpoint = localStorage.getItem('deepseekEndpoint');
-                    response = await fetch(apiEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            "Authorization": `Bearer ${apiKey.trim()}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            model: "deepseek-chat",
-                            messages: [
-                                {
-                                    content: "你是DeepSeek AI助手，由DeepSeek团队开发。你性格严谨专业，说话简洁有力。你会用专业、学术的语气回答问题，注重逻辑性和准确性。",
-                                    role: "system"
-                                },
-                                ...chatHistory.map(msg => ({
+                let response;
+                try {
+                    if (aiModel === 'minimax') {
+                        const groupId = "1879168667833340811";
+                        response = await fetch(`https://api.minimax.chat/v1/text/chatcompletion_v2?GroupId=${groupId}`, {
+                            method: 'POST',
+                            headers: {
+                                "Authorization": `Bearer ${apiKey.trim()}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                model: "minimax-text-01",
+                                messages: [
+                                    {
+                                        content: "你是MiniMax AI助手，由MiniMax团队开发。你性格活泼开朗，说话幽默风趣。你会用轻松愉快的语气回答问题，经常会在回答中加入一些俏皮的表情。",
+                                        role: "system",
+                                        name: "MiniMax AI"
+                                    },
+                                    ...chatHistory.map(msg => ({
+                                        content: msg.content,
+                                        role: msg.isUser ? "user" : "assistant",
+                                        name: msg.isUser ? "用户" : "MiniMax AI"
+                                    })),
+                                    {
+                                        content: message,
+                                        role: "user",
+                                        name: "用户"
+                                    }
+                                ],
+                                stream: false,
+                                max_tokens: 1000,
+                                temperature: 0.1,
+                                top_p: 0.95
+                            })
+                        });
+                    } else {
+                        // DeepSeek API 调用
+                        console.log('当前深度思考状态:', isDeepThinking);
+                        let messages = [
+                            {
+                                role: "system",
+                                content: isDeepThinking 
+                                    ? "你是 DeepSeek AI 的深度推理模型 DeepSeek-R1。你擅长深度思考和复杂推理，特别是在处理需要严密逻辑和深入分析的问题上。请用中文回答问题，回答要深入、专业、逻辑严密。"
+                                    : "你是 DeepSeek AI 助手，使用 DeepSeek-V3 模型。请用中文回答问题，回答要专业、准确、简洁。"
+                            }
+                        ];
+
+                        // 添加当前用户消息
+                        messages.push({
+                            role: "user",
+                            content: message
+                        });
+
+                        // 如果不是深度思考模式，添加历史消息，但限制数量
+                        if (!isDeepThinking) {
+                            const filteredHistory = chatHistory.filter(msg => !msg.model || msg.model === 'deepseek');
+                            // 只保留最近的10条消息
+                            const recentHistory = filteredHistory.slice(-10);
+                            messages = [
+                                messages[0], // 系统消息
+                                ...recentHistory.map(msg => ({
                                     content: msg.content,
                                     role: msg.isUser ? "user" : "assistant"
                                 })),
-                                {
-                                    content: message,
-                                    role: "user"
-                                }
-                            ],
-                            stream: false,
-                            temperature: 0.7,
-                            max_tokens: 2000
-                        })
-                    });
+                                messages[1] // 当前用户消息
+                            ];
+                        }
+
+                        response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                "Authorization": `Bearer ${apiKey.trim()}`,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                model: isDeepThinking ? "deepseek-reasoner" : "deepseek-chat",
+                                messages: messages,
+                                temperature: isDeepThinking ? 0.3 : 0.7,
+                                max_tokens: 2000,
+                                stream: false
+                            })
+                        });
+                    }
+                } catch (fetchError) {
+                    if (fetchError.message === 'Failed to fetch') {
+                        throw new Error('网络连接失败，请检查您的网络连接或API地址是否正确');
+                    }
+                    throw fetchError;
                 }
 
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('API 错误响应:', errorText);
-                    throw new Error(`API 请求失败 (${response.status}): ${errorText}`);
+                    let errorMessage = '请求失败: ';
+                    
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        errorMessage += errorJson.error?.message || errorJson.message || errorText;
+                    } catch {
+                        errorMessage += `HTTP状态码 ${response.status}`;
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
 
                 const data = await response.json();
@@ -1131,12 +1306,19 @@
                 clearInterval(timer);
                 aiMessageDiv.remove();
                 
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    const reply = data.choices[0].message.content;
+                if (data.choices && data.choices[0]) {
+                    let reply;
+                    if (aiModel === 'minimax') {
+                        reply = data.choices[0].message.content;
+                    } else {
+                        // DeepSeek 的响应格式可能不同
+                        reply = data.choices[0].message?.content || data.choices[0].text;
+                    }
+                    
                     const message = {
                         content: reply,
                         isUser: false,
-                        model: aiModel,  // 记录当前使用的模型
+                        model: aiModel,
                         timestamp: new Date().toISOString()
                     };
                     addMessage(message, false);
@@ -1147,31 +1329,58 @@
                 console.error('API 调用出错:', error);
                 clearInterval(timer);
                 aiMessageDiv.remove();
-                addMessage(`发生错误：${error.message}`, false);
+                
+                // 显示更友好的错误消息
+                const errorMessage = {
+                    content: `🚫 ${error.message || '发生未知错误，请稍后重试'}`,
+                    isUser: false,
+                    model: localStorage.getItem('aiModel') || 'minimax',
+                    timestamp: new Date().toISOString(),
+                    type: 'error'
+                };
+                addMessage(errorMessage, false);
+                
+                // 如果是 API Key 相关错误，自动打开设置面板
+                if (error.message.includes('API Key')) {
+                    document.getElementById('settings-panel').classList.add('show');
+                }
             }
         }
 
-        // 加载保存的聊天记录
+        // 修改 loadChats 函数
         function loadChats() {
-            const savedChats = localStorage.getItem('chats');
-            const savedCurrentChatId = localStorage.getItem('currentChatId');
-            
-            if (savedChats) {
-                chats = JSON.parse(savedChats);
-                currentChatId = savedCurrentChatId;
+            try {
+                // 获取当前选择的模型
+                const currentModel = localStorage.getItem('aiModel') || 'deepseek'; // 默认使用 DeepSeek
                 
-                if (currentChatId) {
-                    const currentChat = chats.find(chat => chat.id === currentChatId);
-                    if (currentChat) {
-                        chatHistory = currentChat.messages;
-                        chatHistory.forEach(msg => {
-                            addMessage(msg.content, msg.isUser, false);
-                        });
+                // 加载该模型的聊天记录
+                const modelChatsKey = `chats_${currentModel}`;
+                const savedChats = localStorage.getItem(modelChatsKey);
+                
+                // 清空当前状态
+                chats = savedChats ? JSON.parse(savedChats) : [];
+                chatHistory = [];
+                currentChatId = null;
+                
+                // 清空界面
+                const chatContainer = document.getElementById('chat-container');
+                if (chatContainer) {
+                    chatContainer.innerHTML = '';
+                }
+                
+                const chatList = document.querySelector('.chat-list');
+                if (chatList) {
+                    chatList.innerHTML = '';
+                    if (chats.length > 0) {
+                        updateChatList();
                     }
                 }
                 
-                updateChatList();
-            } else {
+                // 创建新对话
+                createNewChat();
+                
+            } catch (error) {
+                console.error('初始化聊天失败:', error);
                 createNewChat();
             }
         }
@@ -1196,28 +1405,62 @@
             }
         });
 
-        // 添加清空聊天记录的函数
+        // 修改清空聊天记录的函数
         function clearAllChats() {
             if (confirm('确定要清空所有聊天记录吗？此操作不可恢复。')) {
-                // 清空聊天记录
-                chats = [];
-                chatHistory = [];
-                currentChatId = null;
-                
-                // 清除本地存储
-                localStorage.removeItem('chats');
-                localStorage.removeItem('currentChatId');
-                localStorage.removeItem('chatHistory');
-                
-                // 更新界面
-                document.querySelector('.chat-list').innerHTML = '';
-                showWelcomeScreen();
-                
-                // 关闭设置面板
-                document.getElementById('settings-panel').classList.remove('show');
-                
-                // 显示提示
-                alert('聊天记录已清空！');
+                try {
+                    // 停止任何正在进行的消息加载
+                    if (window.messageLoadingTimeout) {
+                        clearTimeout(window.messageLoadingTimeout);
+                    }
+                    
+                    // 清空内存中的数据
+                    chats = [];
+                    chatHistory = [];
+                    currentChatId = null;
+                    
+                    // 清除所有模型的聊天记录
+                    const models = ['minimax', 'deepseek'];
+                    models.forEach(model => {
+                        localStorage.removeItem(`chats_${model}`);
+                        localStorage.removeItem(`currentChatId_${model}`);
+                    });
+                    
+                    // 清除旧的存储键
+                    localStorage.removeItem('chats');
+                    localStorage.removeItem('currentChatId');
+                    localStorage.removeItem('chatHistory');
+                    
+                    // 清空界面
+                    const chatContainer = document.getElementById('chat-container');
+                    if (chatContainer) {
+                        chatContainer.innerHTML = '';
+                    }
+                    
+                    const chatList = document.querySelector('.chat-list');
+                    if (chatList) {
+                        chatList.innerHTML = '';
+                    }
+                    
+                    // 关闭设置面板
+                    const settingsPanel = document.getElementById('settings-panel');
+                    if (settingsPanel) {
+                        settingsPanel.classList.remove('show');
+                    }
+                    
+                    // 显示欢迎界面
+                    showWelcomeScreen();
+                    
+                    // 创建新的空对话
+                    setTimeout(() => {
+                        createNewChat();
+                        alert('聊天记录已清空！');
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('清空聊天记录时出错:', error);
+                    alert('清空聊天记录时出错，请刷新页面重试');
+                }
             }
         }
 
@@ -1256,10 +1499,56 @@
         // 添加登录相关的脚本
         const correctPassword = "62828338"; // 修改默认密码为62828338
         
+        // 添加设备指纹生成函数
+        function generateDeviceFingerprint() {
+            const screenInfo = `${window.screen.width},${window.screen.height},${window.screen.colorDepth}`;
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const language = navigator.language;
+            const platform = navigator.platform;
+            const userAgent = navigator.userAgent;
+            
+            // 将所有信息组合并进行简单的哈希处理
+            const fingerprint = `${screenInfo}-${timeZone}-${language}-${platform}-${userAgent}`;
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                const char = fingerprint.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString();
+        }
+
         // 修改检查登录状态的函数
         function checkLogin() {
-            // 移除检查localStorage中的登录状态
-            // 直接显示登录界面
+            try {
+                const loginInfo = localStorage.getItem('loginInfo');
+                if (loginInfo) {
+                    const { timestamp, deviceFingerprint } = JSON.parse(loginInfo);
+                    const currentTime = Date.now();
+                    const currentFingerprint = generateDeviceFingerprint();
+                    
+                    if (currentTime - timestamp < TIMEOUT_DURATION && deviceFingerprint === currentFingerprint) {
+                        // 先显示主界面
+                        document.getElementById('login-overlay').style.display = 'none';
+                        document.querySelector('.container').style.display = 'flex';
+                        
+                        // 加载设置
+                        loadSettings();
+                        
+                        // 创建新对话
+                        createNewChat();
+                        
+                        // 初始化活动监听
+                        lastActivityTime = Date.now();
+                        initializeActivityMonitoring();
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('登录状态检查失败:', error);
+            }
+            
+            // 如果没有有效的登录信息或发生错误，显示登录界面
             document.getElementById('login-overlay').style.display = 'flex';
             document.querySelector('.container').style.display = 'none';
         }
@@ -1268,25 +1557,64 @@
         function login() {
             const password = document.getElementById('password').value;
             if (password === correctPassword) {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.querySelector('.container').style.display = 'flex';
-                document.getElementById('login-error').style.display = 'none';
-                
-                // 登录成功后自动收起侧边栏
-                const container = document.querySelector('.container');
-                container.classList.add('sidebar-collapsed');
-                
-                // 更新切换按钮的图标
-                const toggleButton = document.querySelector('.toggle-sidebar');
-                toggleButton.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                        <path d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                `;
-                
-                // 初始化活动监听
-                lastActivityTime = Date.now();
-                initializeActivityMonitoring();
+                try {
+                    // 生成设备指纹并保存登录信息
+                    const deviceFingerprint = generateDeviceFingerprint();
+                    const loginInfo = {
+                        timestamp: Date.now(),
+                        deviceFingerprint: deviceFingerprint
+                    };
+                    localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
+                    
+                    // 先显示主界面
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.querySelector('.container').style.display = 'flex';
+                    
+                    // 设置默认模型为 DeepSeek
+                    localStorage.setItem('aiModel', 'deepseek');
+                    
+                    // 更新模型显示
+                    const currentModel = document.querySelector('.current-model');
+                    if (currentModel) {
+                        currentModel.textContent = 'DeepSeek AI';
+                    }
+                    
+                    // 更新设置面板
+                    const aiModel = document.getElementById('ai-model');
+                    if (aiModel) {
+                        aiModel.value = 'deepseek';
+                        aiModel.dispatchEvent(new Event('change'));
+                    }
+                    
+                    // 显示深度思考按钮
+                    const deepThinkingBtn = document.getElementById('deep-thinking');
+                    if (deepThinkingBtn) {
+                        deepThinkingBtn.style.display = 'flex';
+                    }
+                    
+                    // 加载设置
+                    loadSettings();
+                    
+                    // 创建新对话
+                    createNewChat();
+                    
+                    // 初始化活动监听
+                    lastActivityTime = Date.now();
+                    initializeActivityMonitoring();
+                    
+                    // 聚焦输入框
+                    setTimeout(() => {
+                        const userInput = document.getElementById('user-input');
+                        if (userInput) {
+                            userInput.focus();
+                        }
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('登录过程出错:', error);
+                    document.getElementById('login-error').textContent = '登录过程出错，请刷新页面重试';
+                    document.getElementById('login-error').style.display = 'block';
+                }
             } else {
                 document.getElementById('login-error').style.display = 'block';
                 document.getElementById('password').value = '';
@@ -1295,9 +1623,28 @@
 
         // 修改页面加载事件
         window.addEventListener('load', function() {
-            checkLogin(); // 现在这个函数会直接显示登录界面
-            loadSettings();
-            loadChats();
+            try {
+                // 确保所有元素都已加载
+                if (document.readyState === 'complete') {
+                    checkLogin();
+                } else {
+                    // 如果页面还没加载完，等待 DOMContentLoaded 事件
+                    document.addEventListener('DOMContentLoaded', checkLogin);
+                }
+            } catch (error) {
+                console.error('页面加载错误:', error);
+                // 发生错误时显示登录界面
+                document.getElementById('login-overlay').style.display = 'flex';
+                document.querySelector('.container').style.display = 'none';
+            }
+        });
+
+        // 添加回车键登录支持
+        document.getElementById('password').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                login();
+            }
         });
 
         // 在设置面板中添加退出登录功能
@@ -1315,7 +1662,7 @@
         // 退出登录函数
         function logout() {
             if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('loginInfo');
                 document.getElementById('login-overlay').style.display = 'flex';
                 document.querySelector('.container').style.display = 'none';
                 document.getElementById('password').value = '';
@@ -1332,6 +1679,13 @@
         // 更新最后活动时间的函数
         function updateLastActivity() {
             lastActivityTime = Date.now();
+            // 同时更新登录信息的时间戳
+            const loginInfo = localStorage.getItem('loginInfo');
+            if (loginInfo) {
+                const info = JSON.parse(loginInfo);
+                info.timestamp = lastActivityTime;
+                localStorage.setItem('loginInfo', JSON.stringify(info));
+            }
         }
 
         // 检查是否需要自动登出的函数
@@ -1344,7 +1698,7 @@
 
         // 自动登出函数
         function autoLogout() {
-            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('loginInfo');
             document.getElementById('login-overlay').style.display = 'flex';
             document.querySelector('.container').style.display = 'none';
             document.getElementById('password').value = '';
@@ -1415,33 +1769,150 @@
         }
 
         function switchModel(model) {
-            const aiModel = document.getElementById('ai-model');
-            const oldModel = aiModel.value;
-            aiModel.value = model;
+            console.log('切换模型:', model);
+            const oldModel = localStorage.getItem('aiModel');
+            console.log('原模型:', oldModel);
             
-            // 触发 change 事件
-            aiModel.dispatchEvent(new Event('change'));
-            
-            // 更新按钮文本
-            const currentModel = document.querySelector('.current-model');
-            currentModel.textContent = model === 'minimax' ? 'MiniMax AI' : 'DeepSeek AI';
-            
-            // 保存设置
-            localStorage.setItem('aiModel', model);
+            // 只有当新模型与旧模型不同时才进行切换
+            if (oldModel !== model) {
+                try {
+                    // 保存当前模型的聊天记录
+                    if (currentChatId && chatHistory.length > 0) {
+                        const currentChat = chats.find(chat => chat.id === currentChatId);
+                        if (currentChat) {
+                            currentChat.messages = chatHistory;
+                            currentChat.summary = generateSummary(chatHistory);
+                        }
+                        // 保存当前模型的聊天记录到本地存储
+                        const oldModelChatsKey = `chats_${oldModel}`;
+                        localStorage.setItem(oldModelChatsKey, JSON.stringify(chats));
+                    }
+                    
+                    // 更新本地存储中的当前模型
+                    localStorage.setItem('aiModel', model);
+                    
+                    // 重置深度思考模式
+                    isDeepThinking = false;
+                    const deepThinkingBtn = document.getElementById('deep-thinking');
+                    if (deepThinkingBtn) {
+                        deepThinkingBtn.classList.remove('active');
+                        deepThinkingBtn.style.display = model === 'minimax' ? 'none' : 'flex';
+                    }
+                    
+                    // 更新设置面板
+                    const aiModel = document.getElementById('ai-model');
+                    if (aiModel) {
+                        aiModel.value = model;
+                        aiModel.dispatchEvent(new Event('change'));
+                    }
+                    
+                    // 更新显示的模型名称
+                    const currentModel = document.querySelector('.current-model');
+                    if (currentModel) {
+                        currentModel.textContent = model === 'minimax' ? 'MiniMax AI' : 'DeepSeek AI';
+                    }
+                    
+                    // 加载新模型的聊天记录
+                    const newModelChatsKey = `chats_${model}`;
+                    const savedChats = localStorage.getItem(newModelChatsKey);
+                    chats = savedChats ? JSON.parse(savedChats) : [];
+                    
+                    // 清空当前聊天状态
+                    chatHistory = [];
+                    currentChatId = null;
+                    
+                    // 清空聊天界面
+                    const chatContainer = document.getElementById('chat-container');
+                    if (chatContainer) {
+                        chatContainer.innerHTML = '';
+                    }
+                    
+                    // 更新聊天列表
+                    updateChatList();
+                    
+                    // 创建新对话
+                    setTimeout(() => {
+                        createNewChat();
+                        
+                        // 添加模型切换提示
+                        addMessage({
+                            content: `已切换到 ${model === 'minimax' ? 'MiniMax AI' : 'DeepSeek AI'} 模型`,
+                            isUser: false,
+                            model: model,
+                            timestamp: new Date().toISOString(),
+                            type: 'system'
+                        }, false);
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('切换模型时出错:', error);
+                    alert('切换模型时出现错误，请刷新页面重试');
+                }
+            }
             
             // 隐藏选项菜单
             document.querySelector('.model-options').classList.remove('show');
-            
-            // 添加模型切换提示消息
-            if (oldModel !== model) {
-                const switchMessage = {
-                    content: `已切换至 ${model === 'minimax' ? 'MiniMax AI' : 'DeepSeek AI'}`,
-                    isUser: false,
-                    model: model,
-                    timestamp: new Date().toISOString(),
-                    type: 'system'
-                };
-                addMessage(switchMessage, false);
+        }
+
+        // 修改 loadModelChats 函数
+        function loadModelChats(model) {
+            try {
+                const modelChatsKey = `chats_${model}`;
+                const modelCurrentChatKey = `currentChatId_${model}`;
+                
+                // 获取当前模型的聊天记录
+                const savedChats = localStorage.getItem(modelChatsKey);
+                const savedCurrentChatId = localStorage.getItem(modelCurrentChatKey);
+                
+                // 重置当前聊天状态
+                chats = savedChats ? JSON.parse(savedChats) : [];
+                currentChatId = savedCurrentChatId || null;
+                chatHistory = [];
+                
+                // 清空聊天容器
+                const chatContainer = document.getElementById('chat-container');
+                if (chatContainer) {
+                    chatContainer.innerHTML = '';
+                }
+                
+                // 如果没有有效的聊天记录，创建新对话
+                if (!chats || chats.length === 0 || !currentChatId) {
+                    createNewChat();
+                    return;
+                }
+                
+                // 加载当前对话
+                const currentChat = chats.find(chat => chat.id === currentChatId);
+                if (currentChat && currentChat.messages && currentChat.messages.length > 0) {
+                    // 限制加载的消息数量
+                    chatHistory = currentChat.messages.slice(-20);
+                    
+                    // 清除可能存在的旧定时器
+                    if (window.messageLoadingTimeout) {
+                        clearTimeout(window.messageLoadingTimeout);
+                    }
+                    
+                    // 分批显示消息
+                    let index = 0;
+                    function showNextMessage() {
+                        if (index < chatHistory.length) {
+                            addMessage(chatHistory[index], chatHistory[index].isUser, false);
+                            index++;
+                            window.messageLoadingTimeout = setTimeout(showNextMessage, 50); // 增加延迟到50ms
+                        }
+                    }
+                    showNextMessage();
+                } else {
+                    // 如果当前对话无效，创建新对话
+                    createNewChat();
+                }
+                
+                // 更新聊天列表
+                updateChatList();
+                
+            } catch (error) {
+                console.error('加载聊天记录时出错:', error);
+                createNewChat();
             }
         }
 
@@ -1450,15 +1921,106 @@
             const aiModel = localStorage.getItem('aiModel') || 'minimax';
             const currentModel = document.querySelector('.current-model');
             currentModel.textContent = aiModel === 'minimax' ? 'MiniMax AI' : 'DeepSeek AI';
+            
+            // 初始化深度思考按钮的显示状态
+            const deepThinkingBtn = document.getElementById('deep-thinking');
+            if (deepThinkingBtn) {
+                deepThinkingBtn.style.display = aiModel === 'minimax' ? 'none' : 'flex';
+            }
         });
 
         // 点击其他地方关闭选项菜单
         document.addEventListener('click', function(event) {
             const switcher = document.querySelector('.model-switcher');
-            if (!switcher.contains(event.target)) {
-                document.querySelector('.model-options').classList.remove('show');
+            const options = document.querySelector('.model-options');
+            if (switcher && !switcher.contains(event.target)) {
+                options.classList.remove('show');
             }
         });
+
+        // 在 script 标签内添加以下代码
+        function setChineseInput(element) {
+            if (element.getAttribute('lang') !== 'zh') {
+                element.setAttribute('lang', 'zh');
+                element.style.imeMode = 'active';
+            }
+        }
+
+        // 找到 textarea 元素并添加事件监听
+        document.getElementById('user-input').addEventListener('focus', function() {
+            setChineseInput(this);
+        });
+
+        // 添加深度思考切换功能
+        let isDeepThinking = false;
+
+        function toggleDeepThinking() {
+            const btn = document.getElementById('deep-thinking');
+            isDeepThinking = !isDeepThinking;
+            btn.classList.toggle('active', isDeepThinking);
+            console.log('深度思考模式:', isDeepThinking);
+            
+            // 添加切换提示信息
+            const currentModel = localStorage.getItem('aiModel');
+            if (currentModel === 'deepseek') {
+                if (isDeepThinking) {
+                    addMessage({
+                        content: "已切换到 DeepSeek-R1 深度推理模型，此模型更擅长处理需要深度思考和严密推理的问题。",
+                        isUser: false,
+                        model: 'deepseek',
+                        timestamp: new Date().toISOString(),
+                        type: 'system'
+                    }, false);
+                } else {
+                    // 清空历史上下文
+                    chatHistory = chatHistory.slice(-2);  // 只保留最后一次对话
+                    addMessage({
+                        content: "已切换回 DeepSeek-V3 模型，此模型将以简洁专业的方式回答问题。已清空历史上下文以确保回答准确性。",
+                        isUser: false,
+                        model: 'deepseek',
+                        timestamp: new Date().toISOString(),
+                        type: 'system'
+                    }, false);
+                }
+            }
+        }
+
+        // 添加网络状态检测
+        window.addEventListener('online', function() {
+            addMessage({
+                content: "网络已连接",
+                isUser: false,
+                type: 'system'
+            }, false);
+        });
+
+        window.addEventListener('offline', function() {
+            addMessage({
+                content: "网络已断开，请检查网络连接",
+                isUser: false,
+                type: 'system'
+            }, false);
+        });
+
+        // 修改 sendMessage 函数，添加超时处理
+        const fetchWithTimeout = async (url, options, timeout = 30000) => {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+                clearTimeout(id);
+                return response;
+            } catch (error) {
+                clearTimeout(id);
+                if (error.name === 'AbortError') {
+                    throw new Error('请求超时，请重试');
+                }
+                throw error;
+            }
+        };
     </script>
 </body>
 </html>
