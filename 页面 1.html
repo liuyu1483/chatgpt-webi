@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>渝米全屋智能家居 - 专业智能家居解决方案提供商</title>
+<script src="https://cdn.tailwindcss.com/3.3.5"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#3B82F6',
+secondary: '#10B981'
+},
+borderRadius: {
+'none': '0px',
+'sm': '2px',
+DEFAULT: '4px',
+'md': '8px',
+'lg': '12px',
+'xl': '16px',
+'2xl': '20px',
+'3xl': '24px',
+'full': '9999px',
+'button': '4px'
+}
+}
+}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/css/glide.core.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/css/glide.theme.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/glide.min.js"></script>
+</head>
+<body class="min-h-[1024px]">
+<header class="fixed top-0 left-0 right-0 bg-white z-50 shadow-sm">
+<nav class="container mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center">
+<a href="#" class="h-12 flex items-center gap-2">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/fe3898f50f223cb9b63b25392015c867.jpg" alt="渝米智能家居工作室" class="h-8">
+<span class="text-xl text-gray-900">渝米智能家居工作室</span>
+</a>
+</div>
+<div class="flex items-center space-x-8">
+<a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-gray-700 hover:text-primary transition-colors">首页</a>
+<a href="#smart-scenes" onclick="document.querySelector('#smart-scenes').scrollIntoView({behavior:'smooth'})" class="text-gray-700 hover:text-primary transition-colors">产品中心</a>
+<a href="#services" onclick="document.querySelector('#services').scrollIntoView({behavior:'smooth'})" class="text-gray-700 hover:text-primary transition-colors">核心服务</a>
+<a href="#" onclick="document.querySelectorAll('footer div h4').forEach(h => { if(h.textContent === '关于我们') h.scrollIntoView({behavior:'smooth'})})" class="text-gray-700 hover:text-primary transition-colors">关于我们</a>
+<a href="#contact" onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})" class="text-gray-700 hover:text-primary transition-colors">联系我们</a>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<section class="relative h-[600px] bg-gray-50 overflow-hidden">
+<div class="absolute inset-0">
+<img src="https://ai-public.mastergo.com/ai/img_res/cfe6a77ffe808b52de242a6ac703d4cc.jpg"
+class="w-full h-full object-cover object-center" alt="智能家居场景">
+</div>
+<div class="container mx-auto px-6 h-full flex items-center relative">
+<div class="max-w-2xl">
+<h1 class="text-5xl font-bold text-gray-900 mb-6">渝米全屋智能家居</h1>
+<p class="text-2xl text-gray-700 mb-8">专业智能家居解决方案提供商</p>
+<p class="text-lg text-gray-600 mb-10">致力于为用户提供高品质智能开关、智能窗帘及智能家居控制系统，打造智能、舒适的现代生活体验。</p>
+<div class="flex space-x-4">
+<button onclick="showModal()" class="bg-primary text-white px-8 py-3 !rounded-button whitespace-nowrap hover:bg-blue-600 transition-colors">预约设计</button>
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div class="bg-white rounded-lg max-w-md w-full mx-4 overflow-hidden">
+<div class="p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold text-gray-900">联系我们</h3>
+<button onclick="hideModal()" class="text-gray-400 hover:text-gray-500">
+<i class="fas fa-times text-xl"></i>
+</button>
+</div>
+<div class="space-y-6">
+<div class="text-center">
+<p class="text-gray-600 mb-4">欢迎联系我们预约设计服务，我们将为您提供专业的智能家居解决方案</p>
+</div>
+<div class="space-y-4">
+<div class="flex items-center p-4 bg-gray-50 rounded-lg">
+<i class="fas fa-phone text-primary text-xl w-8"></i>
+<div class="ml-3">
+<p class="text-sm text-gray-500">咨询热线</p>
+<p class="text-gray-900 font-medium">15723301119</p>
+</div>
+</div>
+<div class="flex items-center p-4 bg-gray-50 rounded-lg">
+<i class="fab fa-weixin text-primary text-xl w-8"></i>
+<div class="ml-3">
+<p class="text-sm text-gray-500">添加微信</p>
+<p class="text-gray-900 font-medium">Tokgoboys</p>
+</div>
+</div>
+<div class="flex items-center p-4 bg-gray-50 rounded-lg">
+<i class="far fa-clock text-primary text-xl w-8"></i>
+<div class="ml-3">
+<p class="text-sm text-gray-500">服务时间</p>
+<p class="text-gray-900 font-medium">周一至周日 9:00-21:00</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function showModal() {
+document.getElementById('modal').classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+}
+function hideModal() {
+document.getElementById('modal').classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+</script>
+<button onclick="document.querySelector('#smart-scenes').scrollIntoView({behavior:'smooth'})" class="bg-white text-primary px-8 py-3 !rounded-button whitespace-nowrap border border-primary hover:bg-gray-50 transition-colors">了解更多</button>
+</div>
+</div>
+</div>
+</section>
+<section id="products" class="py-20 bg-white">
+<div class="container mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-bold text-gray-900 mb-4">智能场景展示</h2>
+<p class="text-gray-600">精选优质智能家居场景，打造智慧生活空间</p>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group cursor-pointer" onclick="showHomeMode()">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/ea3fc67ec35ea3ad5c403ef38f72993c.jpg"
+class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="回家模式">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">回家模式</h3>
+<p class="text-gray-600 mb-4">感应开门、灯光自动开启、空调预设温度、窗帘自动调节，营造温馨回家氛围</p>
+</div>
+</div>
+<div id="homeModeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div class="bg-white rounded-lg max-w-2xl w-full mx-4 overflow-hidden">
+<div class="p-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-bold text-gray-900">回家模式详情</h3>
+<button onclick="hideHomeMode()" class="text-gray-400 hover:text-gray-500">
+<i class="fas fa-times text-xl"></i>
+</button>
+</div>
+<div class="space-y-6">
+<p class="text-gray-600">"回家模式"是一种通过智能设备联动实现的自动化场景，当用户回家时，系统会自动触发一系列预设的操作，让用户感受到便捷和舒适的家居环境。</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-key text-primary mr-2"></i>
+智能门锁
+</h4>
+<p class="text-gray-600 text-sm">作为回家模式的触发设备，用户通过指纹、密码、手机等方式解锁时，系统会接收到信号并启动回家模式。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-lightbulb text-primary mr-2"></i>
+智能灯光
+</h4>
+<p class="text-gray-600 text-sm">当回家模式启动时，玄关、客厅等区域的灯光会自动亮起，部分灯光还可以调节亮度或颜色。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-blind text-primary mr-2"></i>
+智能窗帘
+</h4>
+<p class="text-gray-600 text-sm">回家模式启动时，窗帘会自动关闭或调整到预设位置。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-temperature-half text-primary mr-2"></i>
+智能温控器
+</h4>
+<p class="text-gray-600 text-sm">调节空调、暖气等设备，将室内温度调整到舒适的预设值。</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-volume-high text-primary mr-2"></i>
+智能音箱
+</h4>
+<p class="text-gray-600 text-sm">播放欢迎语、音乐或提醒信息，增加回家的仪式感。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-plug text-primary mr-2"></i>
+智能插座
+</h4>
+<p class="text-gray-600 text-sm">控制家电的开关，如电视、热水器等。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-person-walking text-primary mr-2"></i>
+人体传感器
+</h4>
+<p class="text-gray-600 text-sm">检测人体活动，避免误触发回家模式。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-microchip text-primary mr-2"></i>
+中央控制器
+</h4>
+<p class="text-gray-600 text-sm">作为智能家居系统的"大脑"，整合所有设备，实现联动。</p>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg mt-6">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-video text-primary mr-2"></i>
+智能摄像头
+</h4>
+<p class="text-gray-600 text-sm">解除安防警戒状态，确保回家时安全。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function showHomeMode() {
+document.getElementById('homeModeModal').classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+}
+function hideHomeMode() {
+document.getElementById('homeModeModal').classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+</script>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group cursor-pointer" onclick="showAwayMode()">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/d1d408f1d50481ba4174fae81280559f.jpg"
+class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="离家模式">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">离家模式</h3>
+<p class="text-gray-600 mb-4">自动关闭所有用电设备、开启安防系统、智能门锁加密、远程监控家居状态</p>
+</div>
+</div>
+<div id="awayModeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div class="bg-white rounded-lg max-w-2xl w-full mx-4 overflow-hidden">
+<div class="p-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-bold text-gray-900">离家模式详情</h3>
+<button onclick="hideAwayMode()" class="text-gray-400 hover:text-gray-500">
+<i class="fas fa-times text-xl"></i>
+</button>
+</div>
+<div class="space-y-6">
+<p class="text-gray-600">离家模式是一种智能家居场景模式，当用户离开家时，通过智能设备的联动，实现一系列自动化操作，以确保家庭安全、节能，并关闭不必要的设备。</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-key text-primary mr-2"></i>
+智能门锁
+</h4>
+<p class="text-gray-600 text-sm">作为离家模式的触发设备之一，用户通过智能门锁的指纹、密码或手机等方式锁上门时，系统会接收到信号并启动离家模式。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-lightbulb text-primary mr-2"></i>
+智能灯光
+</h4>
+<p class="text-gray-600 text-sm">离家模式启动时，所有不必要的灯光会自动关闭，以节省能源。可设置"虚拟占位模式"，定时闪烁或模拟有人在家的灯光效果。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-blind text-primary mr-2"></i>
+智能窗帘
+</h4>
+<p class="text-gray-600 text-sm">自动关闭窗帘，防止阳光直射或保护隐私，同时避免室内温度过高或过低。</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-temperature-half text-primary mr-2"></i>
+智能温控器
+</h4>
+<p class="text-gray-600 text-sm">调整空调、暖气等设备的温度，进入节能模式，或者完全关闭，以节省能源。根据离家时间自动调整温度设置。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-plug text-primary mr-2"></i>
+智能插座
+</h4>
+<p class="text-gray-600 text-sm">关闭不必要的电器设备，如电视、电脑、热水器等，避免待机耗电。与其他智能设备协同工作实现节能。</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<h4 class="font-bold text-gray-900 mb-2 flex items-center">
+<i class="fas fa-video text-primary mr-2"></i>
+智能摄像头
+</h4>
+<p class="text-gray-600 text-sm">启动安防监控模式，自动开启录像或报警功能，确保家庭安全。与传感器配合检测异常活动。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function showAwayMode() {
+document.getElementById('awayModeModal').classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+}
+function hideAwayMode() {
+document.getElementById('awayModeModal').classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+</script>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/3a44b7edca28ddbb9449668e9381e171.jpg"
+class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="睡眠模式">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">睡眠模式</h3>
+<p class="text-gray-600 mb-4">智能调节室温、自动关闭主要照明、轻音助眠、窗帘渐变调节</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/f863cdfac0bc6458eae61a5e0b5b71fc.jpg"
+class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="影音模式">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">影音模式</h3>
+<p class="text-gray-600 mb-4">自动调节环境光线、音响系统优化、温度舒适调节，打造私人影院体验</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/d3963c8f656ff2b10827302957dde489.jpg"
+class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="安防模式">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">安防模式</h3>
+<p class="text-gray-600 mb-4">实时监控、移动侦测、智能门锁、紧急求助、远程控制，为您的家庭保驾护航</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/2f9eb05ae8ff87980c33b9017e0d45bc.jpg"
+class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="清洁模式">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">清洁模式</h3>
+<p class="text-gray-600 mb-4">扫地机器人启动、空气净化、新风系统运行、智能除菌，让家居环境清新洁净</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="services" class="py-20 bg-gray-50">
+<div class="container mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-bold text-gray-900 mb-4">五大核心服务</h2>
+<p class="text-gray-600">专业团队，优质服务，为您提供最佳智能家居解决方案</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+<div class="bg-white p-6 rounded-lg shadow-lg">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="fas fa-home text-primary text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-gray-900 mb-3 text-center">米家全屋智能</h3>
+<ul class="text-gray-600 text-sm space-y-2">
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>基础优选方案</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>稳定可靠系统</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>高性价比生态链</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>全屋灯光控制</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>智能安防系统</li>
+</ul>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="fab fa-apple text-primary text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-gray-900 mb-3 text-center">苹果生态升级</h3>
+<ul class="text-gray-600 text-sm space-y-2">
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>HomeKit无缝接入</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>跨品牌整合</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>米家联动控制</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>多设备操控</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>场景智能联动</li>
+</ul>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="fas fa-users-gear text-primary text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-gray-900 mb-3 text-center">专业活力团队</h3>
+<ul class="text-gray-600 text-sm space-y-2">
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>技术实力雄厚</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>贴心服务支持</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>全程无忧保障</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>创新技术升级</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>专业安装调试</li>
+</ul>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="fas fa-wand-magic-sparkles text-primary text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-gray-900 mb-3 text-center">专属私人定制</h3>
+<ul class="text-gray-600 text-sm space-y-2">
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>深度需求沟通</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>场景化方案</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>智能场景定制</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>安防系统定制</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>个性化设置</li>
+</ul>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-lg">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="fas fa-headset text-primary text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-gray-900 mb-3 text-center">本土化安心服务</h3>
+<ul class="text-gray-600 text-sm space-y-2">
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>本地团队服务</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>24小时响应</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>专业安装维护</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>终身售后保障</li>
+<li class="flex items-center"><i class="fas fa-check text-primary mr-2"></i>上门服务支持</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 bg-white">
+<div class="container mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-bold text-gray-900 mb-4">服务流程</h2>
+<p class="text-gray-600">专业规范的服务流程，确保项目顺利实施</p>
+</div>
+<div class="relative">
+<div class="absolute left-0 top-1/2 w-full h-1 bg-gray-200 -translate-y-1/2"></div>
+<div class="grid grid-cols-4 md:grid-cols-8 gap-4 relative">
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-comments text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">初步咨询</h3>
+<p class="text-xs text-gray-600 text-center">了解需求与预算</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-ruler-combined text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">现场勘测</h3>
+<p class="text-xs text-gray-600 text-center">实地测量与评估</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-drafting-compass text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">方案设计</h3>
+<p class="text-xs text-gray-600 text-center">定制专属方案</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-file-signature text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">合同签订</h3>
+<p class="text-xs text-gray-600 text-center">确认细节与条款</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-boxes text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">设备采购</h3>
+<p class="text-xs text-gray-600 text-center">准备所需设备</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-tools text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">安装调试</h3>
+<p class="text-xs text-gray-600 text-center">专业安装与测试</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-chalkboard-teacher text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">用户培训</h3>
+<p class="text-xs text-gray-600 text-center">使用指导培训</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white relative z-10 mb-4">
+<i class="fas fa-headset text-xl"></i>
+</div>
+<h3 class="text-sm font-bold text-gray-900 mb-2 text-center">售后服务</h3>
+<p class="text-xs text-gray-600 text-center">持续服务支持</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="smart-scenes" class="py-20 bg-white">
+<div class="container mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-bold text-gray-900 mb-4">产品示例</h2>
+<p class="text-gray-600">精选优质智能产品，打造智慧家居生活</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/bd3c2a2f7d43914ff32b3ee2d5d87621.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="智能开关">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">智能开关</h3>
+<p class="text-gray-600 text-sm">触控感应，场景联动，智能控制</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/740270df1bd1b56a6d7cf28f96aa8f2f.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="智能门锁">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">智能门锁</h3>
+<p class="text-gray-600 text-sm">指纹识别，密码门禁，远程控制</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/40939ba709cfbf71aab1604201a503a4.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="摄像头">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">智能摄像头</h3>
+<p class="text-gray-600 text-sm">高清监控，移动侦测，双向通话</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/69c328fd5434b49d6655ade10026ee2e.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="人体传感器">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">人体传感器</h3>
+<p class="text-gray-600 text-sm">智能感应，自动控制，节能环保</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://ai-public.mastergo.com/ai/img_res/a4439a6655120c4744eb7b70a9a6412c.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="筒灯射灯">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">筒灯射灯</h3>
+<p class="text-gray-600 text-sm">可调光色，场景联动，智能控制</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/18da83d98d2481001035a575d7889a4c.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="智能灯带">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">智能灯带</h3>
+<p class="text-gray-600 text-sm">RGB调色，氛围营造，智能控制</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/aedd954b4b84045ee674f67c0f1d63a5.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="旋钮开关">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">旋钮开关</h3>
+<p class="text-gray-600 text-sm">旋钮调节，触感舒适，智能控制</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden group">
+<div class="relative h-64 overflow-hidden">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/f0eb77fe1dd648d1e313f55a50fade93.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="VRF空调">
+</div>
+<div class="p-6">
+<h3 class="text-xl font-bold text-gray-900 mb-2">VRF空调控制</h3>
+<p class="text-gray-600 text-sm">变频控制，温度调节，智能控制</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="contact" class="py-20 bg-gray-50">
+<div class="container mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-bold text-gray-900 mb-4">联系我们</h2>
+<p class="text-gray-600">期待为您提供专业的智能家居解决方案</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+<div class="bg-white p-8 rounded-lg shadow-lg">
+<div class="mb-8">
+<h3 class="text-xl font-bold text-gray-900 mb-4">联系方式</h3>
+<div class="space-y-4">
+<div class="flex items-center">
+<i class="fas fa-map-marker-alt text-primary w-6"></i>
+<span class="ml-3 text-gray-600">重庆市南岸区春上南滨</span>
+</div>
+<div class="flex items-center">
+<i class="fas fa-phone text-primary w-6"></i>
+<span class="ml-3 text-gray-600">15723301119</span>
+</div>
+<div class="flex items-center">
+<i class="fab fa-weixin text-primary w-6"></i>
+<span class="ml-3 text-gray-600">微信：Tokgoboys</span>
+</div>
+<div class="flex items-center">
+<i class="fas fa-clock text-primary w-6"></i>
+<span class="ml-3 text-gray-600">周一至周日 9:00-21:00</span>
+</div>
+</div>
+</div>
+<button class="bg-primary text-white px-8 py-3 w-full !rounded-button whitespace-nowrap hover:bg-blue-600 transition-colors">
+在线咨询
+</button>
+</div>
+<div class="h-[400px] rounded-lg overflow-hidden shadow-lg">
+<img src="https://image-resource.mastergo.com/155162739068341/155162739068343/176ff36a09b4c60ab39c1cf712df57af.png"
+class="w-full h-full object-cover" alt="地图">
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-gray-900 text-white py-12">
+<div class="container mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+<div>
+<h4 class="text-xl font-bold mb-4">关于我们</h4>
+<p class="text-gray-400">渝米全屋智能家居工作室成立于 2025 年，专注于为客户提供专业的智能家居解决方案。</p>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-4">快速链接</h4>
+<ul class="space-y-2">
+<li><a href="#" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white transition-colors">智能场景</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white transition-colors">产品中心</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-4">联系方式</h4>
+<ul class="space-y-2">
+<li class="text-gray-400">电话：15723301119</li>
+<li class="text-gray-400">微信：Tokgoboys</li>
+<li class="text-gray-400">地址：重庆市南岸区春上南滨</li>
+</ul>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-4">关注我们</h4>
+<div class="flex space-x-4">
+<a href="#" class="text-gray-400 hover:text-white transition-colors">
+<i class="fab fa-weixin text-2xl"></i>
+</a>
+<a href="#" class="text-gray-400 hover:text-white transition-colors">
+<i class="fab fa-weibo text-2xl"></i>
+</a>
+<a href="#" class="text-gray-400 hover:text-white transition-colors">
+<i class="fab fa-tiktok text-2xl"></i>
+</a>
+</div>
+</div>
+</div>
+<div class="border-t border-gray-800 pt-8 text-center">
+<p class="text-gray-400">&copy; 2024 渝米全屋智能家居工作室 版权所有</p>
+<p class="text-gray-400 mt-2">渝ICP备20240101号-1</p>
+</div>
+</div>
+</footer>
+</body>
+</html>
